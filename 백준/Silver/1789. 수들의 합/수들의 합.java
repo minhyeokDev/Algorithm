@@ -1,4 +1,3 @@
-
 import java.util.*;
 import java.io.*;
 public class Main {
@@ -19,7 +18,7 @@ public class Main {
 		}
 		System.out.println(count-1);
 		br.close();
-		
+
 
 	}
 

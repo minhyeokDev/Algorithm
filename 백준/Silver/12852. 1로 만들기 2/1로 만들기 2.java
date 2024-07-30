@@ -1,36 +1,45 @@
 import java.io.*;
+import java.util.*;
 
 public class Main {
 
+    static int n;
+    static int[] d = new int[1000004];
+    static int[] pre = new int[1000004];
+
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int N = Integer.parseInt(br.readLine());
 
-        int[] dp = new int[N + 1]; //최소 횟수 저장
-        int[] before = new int[N + 1]; //최소 경로 저장
-        String str = "";
+        n = Integer.parseInt(br.readLine());
 
-        dp[1] = 0;
-        for (int i = 2; i <= N; i++) {
+        d[1] = 0;
+        pre[2] = 1;
+        for (int i = 2; i <= n; i++) {
+            d[i] = d[i - 1] + 1;
+            pre[i] = i - 1;
 
-            dp[i] = dp[i - 1] + 1;
-            before[i] = i - 1;
-
-            if (i % 3 == 0 && dp[i / 3] + 1 < dp[i]) {
-                dp[i] = dp[i / 3] + 1;
-                before[i] = i / 3;
+            if (i % 2 == 0 && d[i] > d[i / 2] + 1) {
+                d[i] = d[i / 2] + 1;
+                pre[i] = i / 2;
             }
-            if (i % 2 == 0 && dp[i / 2] + 1 < dp[i]) {
-                dp[i] = dp[i / 2] + 1;
-                before[i] = i / 2;
+            if (i % 3 == 0 && d[i] > d[i / 3] + 1) {
+                d[i] = d[i / 3] + 1;
+                pre[i] = i / 3;
             }
         }
-        System.out.println(dp[N]);
-
-        while (N > 0) {
-            str += N + " ";
-            N = before[N];
+        System.out.println(d[n]);
+        int cur = n;
+        StringBuilder sb = new StringBuilder();
+        while (true) {
+            sb.append(cur + " ");
+            if (cur == 1) {
+                break;
+            }
+            cur = pre[cur];
         }
-        System.out.print(str);
+        System.out.println(sb);
+        br.close();
     }
+
 }

@@ -7,7 +7,7 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         int n = Integer.parseInt(br.readLine());
-        for (int i = 2; i < n; i++) {
+        for (int i = 2; i * i <= n; i++) {
             while (n % i == 0) {
                 System.out.println(i);
                 n /= i;

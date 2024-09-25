@@ -29,6 +29,7 @@ public class Main {
             Arrays.sort(S);
             func(0, 0);
             System.out.println(sb);
+            sb.setLength(0);
 
         }
 
@@ -39,9 +40,9 @@ public class Main {
     public static void func(int k, int start) {
         if (k == 6) {
             for (int i = 0; i < 6; i++) {
-                System.out.print(arr[i] + " ");
+                sb.append(arr[i] + " ");
             }
-            System.out.println();
+            sb.append("\n");
             return;
         }
 

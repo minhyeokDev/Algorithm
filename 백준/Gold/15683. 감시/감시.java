@@ -3,116 +3,120 @@ import java.util.*;
 
 public class Main {
 
-	static class CCTV {
+    static int n, m;
+    static int[][] map;
+    public static int[][][] mode = {{{0}},
+        {{0}, {1}, {2}, {3}}, // CASE 1 북(0) / 남(1) / 서(2) / 동(3)
+        {{2, 3}, {0, 1}}, // CASE 2 서(2), 동(3) / 북(0), 남(1
+        {{0, 3}, {1, 3}, {1, 2}, {0, 2}},
+        // CASE 3 북(0), 동(3) / 남(1), 3(동) / 남(1), 서(2) / 북(0), 서(2)
+        {{0, 2, 3}, {0, 1, 3}, {1, 2, 3}, {0, 1, 2}},
+        // CASE 4 북(0), 서(2), 동(3) / 북(0), 남(1), 동(3) / 남(1), 서(2), 동(3) / 북(0), 남(1), 서(2)
+        {{0, 1, 2, 3}}}; // CASE 5 북(0), 남(1), 서(2), 동(3)
 
-		int x, y, num;
+    static int[] dx = {-1, 1, 0, 0}; // 북 남 서 동
+    static int[] dy = {0, 0, -1, 1};
+    static List<CCTV> cctvList;
+    static int min = Integer.MAX_VALUE;
 
-		CCTV(int x, int y, int num) {
-			this.x = x;
-			this.y = y;
-			this.num = num;
-		}
-	}
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
-	static int map[][]; //최초에 입력받은 맵
-	static int board2[][] = new int[10][10]; // 사각 지대 개수 세기 위한 맵
-	static int n;
-	static int m;
-	static int[] dx = {1, 0, -1, 0};
-	static int[] dy = {0, 1, 0, -1};
+        n = Integer.parseInt(st.nextToken());
+        m = Integer.parseInt(st.nextToken());
+        map = new int[n][m];
+        cctvList = new ArrayList<>();
 
-	static List<CCTV> cctvList;
+        for (int i = 0; i < n; i++) {
+            st = new StringTokenizer(br.readLine());
+            for (int j = 0; j < m; j++) {
+                map[i][j] = Integer.parseInt(st.nextToken());
+                if (map[i][j] != 0 && map[i][j] != 6) {
+                    cctvList.add(new CCTV(i, j, map[i][j]));
+                }
+            }
+        }
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		n = Integer.parseInt(st.nextToken());
-		m = Integer.parseInt(st.nextToken());
-		int answer = 0;
+        solve(0, map);
 
-		cctvList = new ArrayList<>();
-		map = new int[n][m];
+        System.out.println(min);
+
+        br.close();
+    }
+
+    public static void solve(int depth, int[][] map) {
+        // 체스에 넣은 값들을 뽑아내면서, 번호에 맞는 방향으로 백트래킹으로 그때마다의 방향을 바꿔줌.
+        // 방향을 정하고, bfs 로 뻗어 나가면서 # 로 바꿈
+        // 벽에 부딪히면 그만 뻗어나감.
+        // 그때마다 copy 한 map 에 결과를 저장하고 , 그 때의 최소값을 구함.
+
+        if (depth == cctvList.size()) {
+            int count = check(map);
+            min = Math.min(count, min);
+
+            return;
+        }
+
+        int cctvNum = cctvList.get(depth).num;
+        int x = cctvList.get(depth).x;
+        int y = cctvList.get(depth).y;
+
+        for (int i = 0; i < mode[cctvNum].length; i++) { // CASE 별로
+            int[][] copyMap = new int[n][m];
+
+            for (int k = 0; k < n; k++) {
+                copyMap[k] = map[k].clone();
+            }
+
+            for (int j = 0; j < mode[cctvNum][i].length; j++) { // 각각의 방향 별로
+                int dir = mode[cctvNum][i][j];
+
+                int nX = x + dx[dir];
+                int nY = y + dy[dir];
+
+                while (true) {
+                    if (nX < 0 || nY < 0 || nX >= n || nY >= m) {
+                        break;
+                    }
+                    if (map[nX][nY] == 6) {
+                        break;
+                    }
+                    copyMap[nX][nY] = -1;
+                    nX += dx[dir];
+                    nY += dy[dir];
+                }
+            }
+
+            solve(depth + 1, copyMap);
+
+        }
+
+    }
+
+    public static int check(int[][] map) {
+        int cnt = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (map[i][j] == 0) {
+                    cnt++;
+                }
+            }
+        }
+        return cnt;
+    }
 
 
-		for (int i = 0; i < n; i++) {
-			st = new StringTokenizer(br.readLine());
-			for (int j = 0; j < m; j++) {
-				map[i][j] = Integer.parseInt(st.nextToken());
-				// 빈칸과 벽이 아니라면 CCTV이므로 집어넣음
-				if (map[i][j] != 0 && map[i][j] != 6) {
-					cctvList.add(new CCTV(i, j, map[i][j]));
-				}
-				if (map[i][j] == 0) {
-					answer++;
-				}
-			}
-		}
-		for (int tmp = 0; tmp < (1 << (2 * cctvList.size())); tmp++) {
-			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < m; j++) {
-					board2[i][j] = map[i][j];
-				}
-			}
-			int brute = tmp;
-			for (int i = 0; i < cctvList.size(); i++) {
-				int dir = brute % 4;
-				brute /= 4;
-				int x = cctvList.get(i).x;
-				int y = cctvList.get(i).y;
-				if (map[x][y] == 1) {
-					upd(x, y, dir);
-				} else if (map[x][y] == 2) {
-					upd(x, y, dir);
-					upd(x, y, dir + 2);
-				} else if (map[x][y] == 3) {
-					upd(x, y, dir);
-					upd(x, y, dir + 1);
-				} else if (map[x][y] == 4) {
-					upd(x, y, dir);
-					upd(x, y, dir + 1);
-					upd(x, y, dir + 2);
-				} else { // 5일때
-					upd(x, y, dir);
-					upd(x, y, dir + 1);
-					upd(x, y, dir + 2);
-					upd(x, y, dir + 3);
-				}
-			}
-			int val = 0;
-			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < m; j++) {
-					if (board2[i][j] == 0) {
-						val += 1;
-					}
-				}
-			}
-			answer = Math.min(answer, val);
-		}
+    public static class CCTV {
 
-		System.out.println(answer);
+        int x, y;
+        int num;
 
-		br.close();
-
-	}
-
-	public static void upd(int x, int y, int dir) {
-		dir %= 4;
-		while (true) {
-			x += dx[dir];
-			y += dy[dir];
-			if (check(x, y) || board2[x][y] == 6) {
-				return; // 범위 벗어나거나 벽 만나면 함수 탈출)
-			}
-			if (board2[x][y] != 0) {
-				continue; //해당 칸이 빈칸이 아닐 경우(CCTV가 잇을경우) 넘어감
-			}
-			board2[x][y] = 7; //빈칸을 7로 덮음
-		}
-	}
-
-	public static boolean check(int a, int b) {
-		return a < 0 || a >= n || b < 0 || b >= m;
-	}
+        public CCTV(int x, int y, int num) {
+            this.x = x;
+            this.y = y;
+            this.num = num;
+        }
+    }
 
 }
-

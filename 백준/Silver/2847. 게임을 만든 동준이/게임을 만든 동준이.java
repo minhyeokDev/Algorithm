@@ -12,19 +12,28 @@ public class Main {
             level[i] = Integer.parseInt(br.readLine());
         }
 
+        int prev = level[n-1];
         int ans = 0;
 
-        for (int i = level.length - 1; i > 0; i--) {
-            if (level[i] <= level[i - 1] && level[i - 1] > 0) {
-                while (true) {
-                    if (level[i] > level[i - 1]) {
-                        break;
-                    }
-                    ans++;
-                    level[i - 1]--;
-                }
+        for (int i = n - 2; i >= 0; i--) {
+            if (level[i] >= prev) {
+                ans += level[i] - prev + 1;
+                level[i] = prev - 1;
             }
+            prev = level[i];
         }
+
+//        for (int i = level.length - 1; i > 0; i--) {
+//            if (level[i] <= level[i - 1] && level[i - 1] > 0) {
+//                while (true) {
+//                    if (level[i] > level[i - 1]) {
+//                        break;
+//                    }
+//                    ans++;
+//                    level[i - 1]--;
+//                }
+//            }
+//        }
 
         System.out.println(ans);
         br.close();

@@ -20,12 +20,10 @@ public class Main {
             int end = endMonth * 100 + endDay;
             flowers.add(new Flower(start, end));
         }
-        Collections.sort(flowers, (o1, o2) -> {
-            if (o1.start == o2.start) {
-                return o1.end - o2.end;
-            }
-            return o1.start - o2.start;
-        });
+//        //시작일 빠른 순으로 정렬, 시작일 같다면 종료일 빠른 순으로 정렬
+//        Collections.sort(flowers, (o1, o2) -> {
+//            return o1.start - o2.start; // 시작일 빠른
+//        });
 
         int t = 301; // 현재 시간
         int ans = 0; // 선택한 꽃의 개수

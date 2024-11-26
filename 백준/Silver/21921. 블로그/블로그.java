@@ -5,7 +5,6 @@ public class Main {
 
     static int n, x;
     static int[] arr;
-    static int[] dp;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -13,7 +12,6 @@ public class Main {
         n = Integer.parseInt(st.nextToken());
         x = Integer.parseInt(st.nextToken());
         arr = new int[n + 1];
-        dp = new int[n + 1];
         st = new StringTokenizer(br.readLine());
         for (int i = 1; i <= n; i++) {
             arr[i] = Integer.parseInt(st.nextToken());
